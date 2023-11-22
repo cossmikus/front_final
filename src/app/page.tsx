@@ -1,8 +1,9 @@
 "use client"
+import React, { useEffect, useState } from 'react';
 
-import { useState, ChangeEvent } from 'react';
-
-interface NewUserData {
+interface UserData {
+  user_id: number;
+  email: string;
   given_name: string;
   surname: string;
   city: string;
@@ -11,148 +12,107 @@ interface NewUserData {
   the_password: string;
 }
 
-export default function Home() {
-  const [userId, setUserId] = useState('');
-  const [userData, setUserData] = useState('');
-  const [newUserData, setNewUserData] = useState<NewUserData>({
-    given_name: '',
-    surname: '',
-    city: '',
-    phone_number: '',
-    profile_description: '',
-    the_password: '',
-  });
+const Home: React.FC = () => {
+  const [user, setUser] = useState<UserData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [inputUserId, setInputUserId] = useState<string>(''); // State to store the input user_id
 
-  const handleGetUser = async () => {
+  const fetchData = async (userId: number) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/user/${userId}`);
-      const data = await response.json();
-      setUserData(JSON.stringify(data, null, 2));
-    } catch (error) {
-      console.error('Error fetching user:', error);
-      setUserData('User not found');
-    }
-  };
-
-  const handlePostUser = async () => {
-    try {
-      const response = await fetch('http://127.0.0.1:5000/api/user', {
-        method: 'POST',
+      const response = await fetch(`https://final-db-0o3n.onrender.com/api/user/${userId}`, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newUserData),
       });
-      const data = await response.json();
-      setUserData(JSON.stringify(data, null, 2));
+
+      if (!response.ok) {
+        // Handle non-2xx responses
+        throw new Error(`Failed to fetch data: ${response.statusText}`);
+      }
+
+      const data: UserData = await response.json();
+
+      // Ensure that all expected properties are present in the response
+      if (
+        'user_id' in data &&
+        'email' in data &&
+        'given_name' in data &&
+        'surname' in data &&
+        'city' in data &&
+        'phone_number' in data &&
+        'profile_description' in data &&
+        'the_password' in data
+      ) {
+        setUser(data);
+        setError(null); // Clear any previous errors
+      } else {
+        setError('Invalid data received from the server');
+      }
     } catch (error) {
-      console.error('Error creating user:', error);
-      setUserData('Error creating user');
+      // Handle network errors, parsing errors, or any other unexpected issues
+      console.error('Error fetching user:', error);
+      setError(error.message || 'Error fetching user');
     }
   };
 
-  const handleUpdateUser = async () => {
-    // Implement the logic for updating user here
-    // Use the newUserData state for the updated user data
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputUserId(event.target.value);
   };
 
-  const handleDeleteUser = async () => {
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/api/user/${userId}`, {
-        method: 'DELETE',
-      });
-      const data = await response.json();
-      setUserData(JSON.stringify(data, null, 2));
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      setUserData('Error deleting user');
+  const handleFetchUser = () => {
+    const userId = parseInt(inputUserId, 10);
+    if (!isNaN(userId)) {
+      fetchData(userId);
+    } else {
+      setError('Please enter a valid user ID');
     }
   };
 
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    key: keyof NewUserData
-  ) => {
-    setNewUserData({ ...newUserData, [key]: e.target.value });
-  };
+  useEffect(() => {
+    // Fetch initial data when the component mounts (you may modify this behavior)
+    fetchData(1013);
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center p-8 bg-gray-100">
       <div className="max-w-3xl w-full bg-white rounded-lg p-8 shadow-lg">
-        <div className="mb-6">
-          <h1 className="text-4xl font-bold mb-4">CRUD on database</h1>
-          <div className="flex space-x-4">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded"
-              onClick={handleGetUser}
-            >
-              Get User
-            </button>
-            <button
-              className="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded"
-              onClick={handlePostUser}
-            >
-              Post User
-            </button>
-            <button
-              className="bg-yellow-500 hover:bg-yellow-700 text-white px-4 py-2 rounded"
-              onClick={handleUpdateUser}
-            >
-              Update User
-            </button>
-            <button
-              className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded"
-              onClick={handleDeleteUser}
-            >
-              Delete User
-            </button>
-          </div>
-        </div>
-        <div className="space-y-4">
-          <input
-            type="text"
-            placeholder="Enter User ID"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            className="border rounded w-full px-3 py-2"
-          />
-          <div className="flex space-x-2">
+        <h1>User Details</h1>
+        <div className="flex flex-col mb-4">
+          <label htmlFor="userIdInput">Enter User ID:</label>
+          <div className="flex">
             <input
               type="text"
-              placeholder="Given Name"
-              value={newUserData.given_name}
-              onChange={(e) => handleInputChange(e, 'given_name')}
-              className="border rounded w-full px-3 py-2"
+              id="userIdInput"
+              value={inputUserId}
+              onChange={handleInputChange}
+              className="border p-2 mr-2"
             />
-            {/* Add similar input fields for other user properties */}
-          </div>
-          <div className="flex space-x-4">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded"
-              onClick={handlePostUser}
-            >
-              Save
-            </button>
-            <button
-              className="bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded"
-              onClick={() => setNewUserData({
-                given_name: '',
-                surname: '',
-                city: '',
-                phone_number: '',
-                profile_description: '',
-                the_password: '',
-              })}
-            >
-              Clear
+            <button onClick={handleFetchUser} className="bg-blue-500 text-white px-4 py-2">
+              Fetch User
             </button>
           </div>
         </div>
-        <div className="mt-6">
-          <h2 className="text-2xl font-bold mb-2">User Data:</h2>
-          <pre className="bg-gray-200 p-4 rounded">{userData}</pre>
-        </div>
+        {error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          <ul>
+            {user && (
+              <li>
+                <p>User ID: {user.user_id}</p>
+                <p>Email: {user.email}</p>
+                <p>Given Name: {user.given_name}</p>
+                <p>Surname: {user.surname}</p>
+                <p>City: {user.city}</p>
+                <p>Phone: {user.phone_number}</p>
+                <p>Profile Description: {user.profile_description}</p>
+                <p>Password: {user.the_password}</p>
+              </li>
+            )}
+          </ul>
+        )}
       </div>
     </main>
   );
-}
+};
+
+export default Home;
