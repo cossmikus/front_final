@@ -48,8 +48,8 @@ const Home: React.FC = () => {
       } else {
         setError('Invalid data received from the server');
       }
-    } catch (error) {
-      // Handle network errors, parsing errors, or any other unexpected issues
+    } catch (error: any) {
+      // Explicitly specify the type of 'error' as 'any'
       console.error('Error fetching user:', error);
       setError(error.message || 'Error fetching user');
     }
