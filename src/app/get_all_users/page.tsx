@@ -52,7 +52,7 @@ const GetAllUsers: React.FC = () => {
             <table className="w-full table-auto border-collapse">
               <thead className="bg-gray-200">
                 <tr>
-                  <th className="border p-2">#</th>
+                  <th className="border p-2">UserID</th>
                   <th className="border p-2">Email</th>
                   <th className="border p-2">Given Name</th>
                   <th className="border p-2">Surname</th>
@@ -65,7 +65,7 @@ const GetAllUsers: React.FC = () => {
               <tbody>
                 {users.map((user, index) => (
                   <tr key={user.user_id} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}>
-                    <td className="border p-2">{index + 1}</td>
+                    <td className="border p-2">{user.user_id}</td>
                     <td className="border p-2">{user.email}</td>
                     <td className="border p-2">{user.given_name}</td>
                     <td className="border p-2">{user.surname}</td>
