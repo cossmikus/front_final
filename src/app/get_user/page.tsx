@@ -13,7 +13,7 @@ const GetUserById: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`https://final-db-0o3n.onrender.com/api/user/${userId}`);
+      const response = await fetch(`https://backfinaldb-production.up.railway.app/api/user/${userId}`);
       if (!response.ok) {
         throw new Error(`Failed to fetch user: ${response.statusText}`);
       }

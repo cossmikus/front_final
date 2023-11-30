@@ -41,7 +41,7 @@ const UpdateUser: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`https://final-db-0o3n.onrender.com/api/user/${userId}`, {
+      const response = await fetch(`https://backfinaldb-production.up.railway.app/api/user/${userId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

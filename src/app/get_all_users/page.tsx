@@ -23,7 +23,7 @@ const GetAllUsers: React.FC = () => {
   useEffect(() => {
     const fetchAllUsers = async () => {
       try {
-        const response = await fetch('https://final-db-0o3n.onrender.com/api/users');
+        const response = await fetch('https://backfinaldb-production.up.railway.app/api/users');
         if (!response.ok) {
           throw new Error(`Failed to fetch users: ${response.statusText}`);
         }

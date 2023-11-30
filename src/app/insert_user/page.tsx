@@ -25,7 +25,7 @@ const CreateUser: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://final-db-0o3n.onrender.com/api/user', {
+      const response = await fetch('https://backfinaldb-production.up.railway.app/api/user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
