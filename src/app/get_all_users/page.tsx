@@ -79,7 +79,7 @@ const GetAllUsers: React.FC = () => {
             </table>
           </div>
         ) : (
-          <p className="text-gray-500">No users found.</p>
+          <p className="text-gray-500">Wait a bit please!.</p>
         )}
       </div>
     </main>
